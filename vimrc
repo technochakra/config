@@ -1,6 +1,6 @@
 " Mohit's vimrc file.
 
-" Steps to setup 
+" Steps to setup
 " 1. Clone file from git and place it in ~/config/
 " 2. On Mac/Linux create ~/.vimrc and so ~/config/vimrc
 
@@ -8,16 +8,18 @@
 "always show the status line
 set laststatus=2
 
-set statusline=%<%f%m%r%{&ff}\ %y%={%{getcwd()}}\ [byte=%b,0x%B]\ [line=%l][col=%c%V]\ %P
+"set statusline=%<%f%m%r%{&ff}\ %y%={%{getcwd()}}\ [byte=%b,0x%B]\ [line=%l][col=%c%V]\ %P
 set ruler
 set cmdheight=2
 set helpheight=4
+set cursorline
+set nostartofline
 
 "Show partial commands
 set showcmd
 " Used in tab completion on the command mode
-set wildmenu 
-set wildmode=list:longest,full 
+set wildmenu
+set wildmode=list:longest,full
 
 if has("gui_running")
     "Gui font
@@ -35,16 +37,19 @@ else
     colorscheme murphy
 endif
 
-"Becoz of the scroll option, the up and down keeps the cursor in the middle. 
+"Becoz of the scroll option, the up and down keeps the cursor in the middle.
 set so=9999
 
 "===== VIM settings =====
 "history for undo
 set history=100
-
+set clipboard=unnamed
 "This means be more vim like than vi
 set nocompatible
 filetype off
+
+
+set secure
 
 " Do not start in insert mode
 set noinsertmode
@@ -67,7 +72,11 @@ if has("autocmd")
 endif " has("autocmd")
 
 "===== General text settings =====
-set ic 
+set encoding=utf-8 nobomb
+set binary
+set noeol
+
+set ic
 set hlsearch
 set incsearch
 set nu
@@ -83,20 +92,20 @@ set magic
 
 " The way tabs and trailing characters should look like
 "set listchars+=tab:»·,trail:·
-set listchars+=tab:\|\ 
+set listchars+=tab:\|\
 
 
 "=====Key mappings and shortcuts =====
 
-"When right and left are pressed at BOL or EOL, then the cursor will jump to the previous or next line.  
+"When right and left are pressed at BOL or EOL, then the cursor will jump to the previous or next line.
 set ww+=<,>
-set backspace=indent,eol,start 
+set backspace=indent,eol,start
 
 "My Mappings
 " toggle wrap on / off
 map <leader>w :set wrap!<cr>
 
-" toggle showing of hidden stuff 
+" toggle showing of hidden stuff
 map <leader>l :set list!<cr>
 
 "window moving features.  handy to use
@@ -118,8 +127,8 @@ map <F12> :let @/=""<cr> :echo "Highlights Cleared"<cr>
 " Tab shortcuts
 map <leader>tn :tabnew %<cr>
 map <leader>tc :tabclose<cr>
-map <leader>tm :tabmove 
-map <leader>te :tabedit 
+map <leader>tm :tabmove
+map <leader>te :tabedit
 
 " Normal mode mappings
 "replace word under cursor
@@ -128,11 +137,12 @@ nmap <leader>; :%s/\<<c-r>=expand("<cword>")<cr>\>/
 nmap <leader>i i<space><Esc>r
 
 " Turn spelling on for current buffer
-nmap <Leader>sp :setlocal spell spelllang=en_us<cr> 
+nmap <Leader>sp :setlocal spell spelllang=en_us<cr>
 
 " move up and down one line in insert mode
-imap <up> <C-o>gk
-imap <down> <C-o>gj
+" DISABLED up, down due to conflict with tab autocompletion
+"imap <up> <C-o>gk
+""imap <down> <C-o>gj
 " command line mapping
 " expand to full filename
 cmap >fn <c-r>=expand('%:p')<cr>
@@ -157,7 +167,7 @@ iab teh the
 
 "More mappings for quick editing / sourcing _vimrc file
 "map <leader>v :vsplit $VIM/_vimrc<cr>
-map <leader>v :e ~/config/vimrc<cr>
+map <leader>v :tabnew ~/config/vimrc<cr>
 map <leader>s :w!<cr> :so ~/config/vimrc<cr>
 autocmd! bufwritepost vimrc source ~/config/vimrc
 
@@ -170,7 +180,7 @@ syntax enable
 :set path=../include,../resources,../h,../includes,.,../inc
 
 "Make program that I commonly use
-:set makeprg=g++\ -g\ -Wall\ %\ 2>&1 
+:set makeprg=g++\ -g\ -Wall\ %\ 2>&1
 
 "grep program with ignore case
 set grepprg=grep\ -n\ -H\ -i
@@ -182,7 +192,7 @@ set showmatch
 set matchtime=5
 
 
-"Folding 
+"Folding
 set foldmethod=manual
 set foldlevel=1
 set foldcolumn=1
@@ -203,12 +213,12 @@ endfunction
 "*************************************************************
 "CSV highlighter.  Handy tip.
 
-function! CSVH(x) 
-    execute 'match Keyword /^\([^,]*,\)\{'.(a:x-1).'}\zs[^,]*/' 
-    execute 'normal ^'.(a:x-1).'f,' 
-endfunction 
+function! CSVH(x)
+    execute 'match Keyword /^\([^,]*,\)\{'.(a:x-1).'}\zs[^,]*/'
+    execute 'normal ^'.(a:x-1).'f,'
+endfunction
 
-command! -nargs=1 Csv :call CSVH(<args>) 
+command! -nargs=1 Csv :call CSVH(<args>)
 
 
 " set the runtime path to include Vundle and initialize
@@ -226,28 +236,37 @@ Plugin 'VundleVim/Vundle.vim'
 " plugin on GitHub repo
 
 "I use for sure
+"misc
 Plugin 'TeTrIs.vim'
-Plugin 'Raimondi/delimitMate'
+Plugin 'itchyny/calendar.vim'
+"coding
 Plugin 'docunext/closetag.vim'
 Plugin 'tpope/vim-fugitive'
-Plugin 'itchyny/calendar.vim'
+Plugin 'airblade/vim-gitgutter'
+"editing
+Plugin 'ervandew/supertab'
+Plugin 'Raimondi/delimitMate'
+"navigation
+Plugin 'bling/vim-airline'
+Plugin 'kien/ctrlp.vim'
 
-"Trying out ones below.  
+"Trying out ones below.
 "Plugin 'scrooloose/nerdtree.git'
 "Plugin 'scrooloose/nerdcommenter.git'
 
 Plugin 'scrooloose/syntastic.git'
-Plugin 'ervandew/supertab'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
+
 filetype plugin indent on    " required
 
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+"set statusline+=%#warningmsg#
+"set statusline+=%{SyntasticStatuslineFlag()}
+"set statusline+=%*
 
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 
+  let g:airline_detect_modified=1
