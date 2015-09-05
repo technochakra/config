@@ -44,7 +44,7 @@ set history=100
 
 "This means be more vim like than vi
 set nocompatible
-
+filetype off
 
 " Do not start in insert mode
 set noinsertmode
@@ -189,28 +189,7 @@ set foldcolumn=1
 
 
 
-"My favorite script downloads from vim.sf.net
-" bufexplorer ; Calendar ; taglist ; favmenu
-" minibufexpl ; a (alternate between files) ; 
-" showpairs ; tetris ; showmarks; hexman
-
-
 "===== Script specific settings =====
-
-let g:miniBufExplMapCTabSwitchBufs = 1
-let g:miniBufExplorerMoreThanOne = 1
-let g:miniBufExplModSelTarget = 0
-let g:miniBufExplMapWindowNavVim = 1
-let g:miniBufExplVSplit = 20
-let g:miniBufExplSplitBelow=1
-
-nnoremap <silent> <F11> :YRShow<CR>
-let yankring_enabled = 0
-
-if filereadable($VIM . "vimfiles\ftplugin\pydiction\complete-dict") 
-    filetype plugin on 
-    let g:pydiction_location = $VIM . "vimfiles\ftplugin\pydiction\complete-dict" 
-endif
 
 
 set diffexpr=MyDiff()
@@ -230,3 +209,45 @@ function! CSVH(x)
 endfunction 
 
 command! -nargs=1 Csv :call CSVH(<args>) 
+
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+
+" The following are examples of different formats supported.
+" Keep Plugin commands between vundle#begin/end.
+" plugin on GitHub repo
+
+"I use for sure
+Plugin 'TeTrIs.vim'
+Plugin 'Raimondi/delimitMate'
+Plugin 'docunext/closetag.vim'
+Plugin 'tpope/vim-fugitive'
+Plugin 'itchyny/calendar.vim'
+
+"Trying out ones below.  
+"Plugin 'scrooloose/nerdtree.git'
+"Plugin 'scrooloose/nerdcommenter.git'
+
+Plugin 'scrooloose/syntastic.git'
+Plugin 'ervandew/supertab'
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 0
+
