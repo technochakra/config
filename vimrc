@@ -1,8 +1,12 @@
 " Mohit's vimrc file.
 
 " Steps to setup
-" 1. Clone file from git and place it in ~/config/
-" 2. On Mac/Linux create ~/.vimrc and so ~/config/vimrc
+" 1. Clone file from git and place it in ~/config/.
+" 2. On Mac/Linux create ~/.vimrc and so ~/config/vimrc from it.
+" 3. Download vundle from - https://github.com/VundleVim/Vundle.vim
+" 4. Download Adobe Source Code Pro font from https://github.com/adobe-fonts/source-code-pro
+" 5. run :PluginInstall
+" The above steps will get you the preferred GUI font, the vimrc settings and the plugin manager
 
 "=====UI Settings =====
 "always show the status line
@@ -13,7 +17,6 @@ set ruler
 set cmdheight=2
 set helpheight=4
 set cursorline
-set nostartofline
 
 "Show partial commands
 set showcmd
@@ -27,12 +30,16 @@ if has("gui_running")
     "Andale Mono is a good fixed size font.
     "set guifont=Andale_Mono:h12
 
+    " using Source Code Pro
+    set anti enc=utf-8
+    set guifont=Source\ Code\ Pro:h18
+
     "When in visual mode, copy selected text to clipboard
     set guioptions+=a
     set guioptions-=T
     set guitablabel=[%N]\ %f
     "Soothing background
-    colorscheme desert
+    colorscheme darkblue
 else
     colorscheme murphy
 endif
@@ -67,9 +74,7 @@ set hidden
 set autowrite
 set ff=unix
 "make local directory same as file
-if has("autocmd")
-    autocmd BufEnter * :lcd %:p:h
-endif " has("autocmd")
+autocmd BufEnter * :lcd %:p:h
 
 "===== General text settings =====
 set encoding=utf-8 nobomb
@@ -100,6 +105,7 @@ set listchars+=tab:\|\
 "When right and left are pressed at BOL or EOL, then the cursor will jump to the previous or next line.
 set ww+=<,>
 set backspace=indent,eol,start
+set nostartofline
 
 "My Mappings
 " toggle wrap on / off
