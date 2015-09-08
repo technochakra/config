@@ -55,6 +55,8 @@ set clipboard=unnamed
 set nocompatible
 filetype off
 
+set backupdir=~/.vim/backup,.,/tmp
+set directory=~/.vim/swap,.,/tmp
 
 set secure
 
