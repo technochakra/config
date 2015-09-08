@@ -75,6 +75,7 @@ set autowrite
 set ff=unix
 "make local directory same as file
 autocmd BufEnter * :lcd %:p:h
+autocmd BufEnter * silent! lcd %:p:h
 
 "===== General text settings =====
 set encoding=utf-8 nobomb
@@ -244,7 +245,8 @@ Plugin 'VundleVim/Vundle.vim'
 "I use for sure
 "misc
 Plugin 'TeTrIs.vim'
-Plugin 'itchyny/calendar.vim'
+Plugin 'mattn/calendar-vim'
+"Plugin 'itchyny/calendar.vim'
 "coding
 Plugin 'docunext/closetag.vim'
 Plugin 'tpope/vim-fugitive'
@@ -259,7 +261,6 @@ Plugin 'kien/ctrlp.vim'
 "Trying out ones below.
 "Plugin 'scrooloose/nerdtree.git'
 "Plugin 'scrooloose/nerdcommenter.git'
-
 Plugin 'scrooloose/syntastic.git'
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
