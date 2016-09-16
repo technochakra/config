@@ -200,6 +200,7 @@ set shellpipe=\|\ tee
 set showmatch
 set matchtime=5
 
+runtime macros/matchit.vim
 
 "Folding
 set foldmethod=manual
@@ -249,17 +250,21 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'TeTrIs.vim'
 Plugin 'mattn/calendar-vim'
 "Plugin 'itchyny/calendar.vim'
+"Plugin 'chriskempson/vim-tomorrow-theme'
+
 "coding
 Plugin 'docunext/closetag.vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'airblade/vim-gitgutter'
+Plugin 'gregsexton/MatchTag'
+Plugin 'Yggdroot/indentLine'
 "editing
 Plugin 'ervandew/supertab'
 Plugin 'Raimondi/delimitMate'
 "navigation
 Plugin 'bling/vim-airline'
 Plugin 'kien/ctrlp.vim'
-
+Plugin 'ShowMarks'
 "Trying out ones below.
 "Plugin 'scrooloose/nerdtree.git'
 "Plugin 'scrooloose/nerdcommenter.git'
@@ -272,6 +277,11 @@ filetype plugin indent on    " required
 "set statusline+=%#warningmsg#
 "set statusline+=%{SyntasticStatuslineFlag()}
 "set statusline+=%*
+
+let g:syntastic_mode_map = {
+    \ "mode": "passive",
+    \ "active_filetypes": [],
+    \ "passive_filetypes": []}
 
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
