@@ -1,4 +1,4 @@
-" Mohit's vimrc file.
+"o Mohit's vimrc file.
 
 " Steps to setup
 " 1. Clone file from git and place it in ~/config/.
@@ -7,6 +7,7 @@
 " 4. Download Adobe Source Code Pro font from https://github.com/adobe-fonts/source-code-pro
 " 5. run :PluginInstall
 " The above steps will get you the preferred GUI font, the vimrc settings and the plugin manager
+" Tools to install - js-beautify, jshint, ctags (exuberant), the_silver_searcher
 
 "=====UI Settings =====
 "always show the status line
@@ -143,7 +144,7 @@ map <leader>te :tabedit
 "replace word under cursor
 nmap <leader>; :%s/\<<c-r>=expand("<cword>")<cr>\>/
 " in normal mode insert one character
-nmap <leader>i i<space><Esc>r
+"nmap <leader>i i<space><Esc>r
 
 " Turn spelling on for current buffer
 nmap <Leader>sp :setlocal spell spelllang=en_us<cr>
@@ -249,26 +250,43 @@ Plugin 'VundleVim/Vundle.vim'
 "misc
 Plugin 'TeTrIs.vim'
 Plugin 'mattn/calendar-vim'
-"Plugin 'itchyny/calendar.vim'
 "Plugin 'chriskempson/vim-tomorrow-theme'
 
 "coding
+    " Close html tags
 Plugin 'docunext/closetag.vim'
+    " Git integration
 Plugin 'tpope/vim-fugitive'
+    " See git edits in gutter
 Plugin 'airblade/vim-gitgutter'
+    " match html tags
 Plugin 'gregsexton/MatchTag'
 Plugin 'Yggdroot/indentLine'
+Plugin 'scrooloose/syntastic.git'
 "editing
 Plugin 'ervandew/supertab'
 Plugin 'Raimondi/delimitMate'
 "navigation
+  "Improve status line.
 Plugin 'bling/vim-airline'
+  " Type CTRL P in normal mode for reaching a file quickly
 Plugin 'kien/ctrlp.vim'
-Plugin 'ShowMarks'
+  "shows marks in left margin
+"Plugin 'ShowMarks'
 "Trying out ones below.
-"Plugin 'scrooloose/nerdtree.git'
-"Plugin 'scrooloose/nerdcommenter.git'
-Plugin 'scrooloose/syntastic.git'
+"Plugin 'nathanaelkane/vim-indent-guides'
+  " Quick navigation using <leader><leader>w
+Plugin 'easymotion/vim-easymotion'
+Plugin 'pangloss/vim-javascript'
+  " Navigate tags created using ctags
+Plugin 'majutsushi/tagbar'
+  " replace surrounding and matching tags
+Plugin 'tpope/vim-surround'
+"Plugin 'itchyny/lightline.vim'
+"Plugin 'vim-ctrlspace/vim-ctrlspace'
+Plugin 'mhinz/vim-grepper'
+Plugin 'leafgarland/typescript-vim'
+
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 
@@ -288,4 +306,19 @@ let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 
-  let g:airline_detect_modified=1
+let g:airline_detect_modified=1
+" Shorten Normal, Visual and Command
+let g:airline_mode_map={'c': 'C', '^S': 'S-BLOCK', 'R': 'REPLACE', 's': 'SEL', 't': 'TERMINAL', 'V': 'V-LINE', '^V': 'V-BLOCK', 'i': 'I', '__': '------', 'S': 'S-LINE', 'v': 'V', 'n': 'N'}
+let g:airline_section_x='%{getcwd()}'
+let g:airline_section_z=''
+"let g:airline_right_sep=''
+let g:airline_exclude_preview = 1
+
+"
+
+let g:CtrlSpaceLoadLastWorkspaceOnStart = 1
+let g:CtrlSpaceSaveWorkspaceOnSwitch = 1
+let g:CtrlSpaceSaveWorkspaceOnExit = 1
+if executable("ag")
+    let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
+endif
