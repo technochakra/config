@@ -1,4 +1,4 @@
-"o Mohit's vimrc file.
+"Mohit's vimrc file.
 
 " Steps to setup
 " 1. Clone file from git and place it in ~/config/.
@@ -40,7 +40,8 @@ if has("gui_running")
     set guioptions-=T
     set guitablabel=[%N]\ %f
     "Soothing background
-    colorscheme darkblue
+    let macvim_skip_colorscheme=1
+    "colorscheme darkblue
 else
     colorscheme murphy
 endif
@@ -77,7 +78,7 @@ set hidden
 set autowrite
 set ff=unix
 "make local directory same as file
-autocmd BufEnter * :lcd %:p:h
+"autocmd BufEnter * :lcd %:p:h
 autocmd BufEnter * silent! lcd %:p:h
 
 "===== General text settings =====
@@ -92,7 +93,7 @@ set nu
 set nowrap
 set nolist
 
-set tabstop=4
+set tabstop=2
 set expandtab
 
 set autoindent
@@ -129,10 +130,10 @@ map <up> gk
 map <down> gj
 
 "Yank hex numbers as decimals
-map <leader>y :let @*=<C-R><C-W> +0<cr>
+"map <leader>y :let @*=<C-R><C-W> +0<cr>
 
 " clean the dirty looking screen after a highlight search
-map <F12> :let @/=""<cr> :echo "Highlights Cleared"<cr>
+"map <F12> :let @/=""<cr> :echo "Highlights Cleared"<cr>
 
 " Tab shortcuts
 map <leader>tn :tabnew %<cr>
@@ -204,9 +205,11 @@ set matchtime=5
 runtime macros/matchit.vim
 
 "Folding
-set foldmethod=manual
-set foldlevel=1
-set foldcolumn=1
+set foldmethod=indent
+set foldlevelstart=1
+"set foldmethod=manual
+"set foldlevel=1
+"set foldcolumn=1
 
 
 
@@ -248,14 +251,15 @@ Plugin 'VundleVim/Vundle.vim'
 
 "I use for sure
 "misc
-Plugin 'TeTrIs.vim'
-Plugin 'mattn/calendar-vim'
+"Plugin 'TeTrIs.vim'
+"Plugin 'mattn/calendar-vim'
 "Plugin 'chriskempson/vim-tomorrow-theme'
 
 "coding
-    " Close html tags
+    " Close html tags.  Triggered when </ is typed.
 Plugin 'docunext/closetag.vim'
     " Git integration
+    "Try :Gstatus, :GBrowse
 Plugin 'tpope/vim-fugitive'
     " See git edits in gutter
 Plugin 'airblade/vim-gitgutter'
@@ -264,7 +268,7 @@ Plugin 'gregsexton/MatchTag'
 Plugin 'Yggdroot/indentLine'
 Plugin 'scrooloose/syntastic.git'
 "editing
-Plugin 'ervandew/supertab'
+"Plugin 'ervandew/supertab'
 Plugin 'Raimondi/delimitMate'
 "navigation
   "Improve status line.
@@ -282,15 +286,46 @@ Plugin 'pangloss/vim-javascript'
 Plugin 'majutsushi/tagbar'
   " replace surrounding and matching tags
 Plugin 'tpope/vim-surround'
-"Plugin 'itchyny/lightline.vim'
-"Plugin 'vim-ctrlspace/vim-ctrlspace'
-Plugin 'mhinz/vim-grepper'
+"Typescript related.
 Plugin 'leafgarland/typescript-vim'
+Plugin 'Shougo/vimproc.vim'
+Plugin 'Quramy/tsuquyomi'
+Plugin 'Quramy/vim-js-pretty-template'
+Plugin 'bdauria/angular-cli.vim'
+Plugin 'scrooloose/nerdtree'
+"Plugin 'Valloric/YouCompleteMe'
+
+" theme
+Plugin 'Reewr/vim-monokai-phoenix'
+
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
 
 filetype plugin indent on    " required
+
+
+"typescript-vim
+"let g:typescript_compiler_binary = 'tsc'
+"let g:typescript_compiler_options = ''
+"autocmd QuickFixCmdPost [^l]* nested cwindow
+"autocmd QuickFixCmdPost    l* nested lwindow
+autocmd BufNewFile,BufRead *.ts,*.tsx setlocal filetype=typescript
+
+"vim-js-pretty
+autocmd FileType typescript JsPreTmpl html
+autocmd FileType typescript syn clear foldBraces
+
+" syntactic typescript
+let g:tsuquyomi_disable_quickfix = 1
+let g:syntastic_typescript_checkers = ['tsuquyomi']
+
+
+"nerdtree
+autocmd vimenter * NERDTree
+"autocmd BufEnter * if &ft !~ '^nerdtree$' | silent! lcd %:p:h | endif
+"autocmd StdinReadPre * let s:std_in=1
+"autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 
 "set statusline+=%#warningmsg#
 "set statusline+=%{SyntasticStatuslineFlag()}
@@ -322,3 +357,10 @@ let g:CtrlSpaceSaveWorkspaceOnExit = 1
 if executable("ag")
     let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
 endif
+
+if has("gui_running")
+    colorscheme  monokai-phoenix
+endif
+
+" show quotes in json files
+set conceallevel=0
