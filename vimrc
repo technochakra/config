@@ -151,6 +151,8 @@ nmap <leader>; :%s/\<<c-r>=expand("<cword>")<cr>\>/
 nmap <Leader>sp :setlocal spell spelllang=en_us<cr>
 
 " move up and down one line in insert mode
+
+" move up and down one line in insert mode
 " DISABLED up, down due to conflict with tab autocompletion
 "imap <up> <C-o>gk
 ""imap <down> <C-o>gj
@@ -211,6 +213,11 @@ set foldlevelstart=1
 "set foldlevel=1
 "set foldcolumn=1
 
+"Nginx support
+au BufRead,BufNewFile *.nginx set ft=nginx
+au BufRead,BufNewFile */etc/nginx/* set ft=nginx
+au BufRead,BufNewFile */usr/local/nginx/conf/* set ft=nginx
+au BufRead,BufNewFile nginx.conf set ft=nginx
 
 
 "===== Script specific settings =====
@@ -290,14 +297,13 @@ Plugin 'tpope/vim-surround'
 Plugin 'leafgarland/typescript-vim'
 Plugin 'Shougo/vimproc.vim'
 Plugin 'Quramy/tsuquyomi'
-Plugin 'Quramy/vim-js-pretty-template'
-Plugin 'bdauria/angular-cli.vim'
 Plugin 'scrooloose/nerdtree'
 "Plugin 'Valloric/YouCompleteMe'
 
 " theme
 Plugin 'Reewr/vim-monokai-phoenix'
 
+Plugin 'nginx.vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
