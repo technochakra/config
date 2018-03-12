@@ -275,6 +275,9 @@ Plugin 'airblade/vim-gitgutter'
 Plugin 'gregsexton/MatchTag'
 Plugin 'Yggdroot/indentLine'
 Plugin 'scrooloose/syntastic.git'
+" visual indent guidelines for code
+Plugin 'nathanaelkane/vim-indent-guides'
+
 "editing
 "Plugin 'ervandew/supertab'
 Plugin 'Raimondi/delimitMate'
@@ -301,8 +304,15 @@ Plugin 'Quramy/tsuquyomi'
 Plugin 'scrooloose/nerdtree'
 "Plugin 'Valloric/YouCompleteMe'
 
+" vue syntax
+"Plugin 'posva/vim-vue'
+
+" multiple js library syntax
+Plugin 'othree/javascript-libraries-syntax.vim'
+
 " theme
 Plugin 'Reewr/vim-monokai-phoenix'
+
 
 Plugin 'nginx.vim'
 
@@ -322,6 +332,12 @@ autocmd BufNewFile,BufRead *.ts,*.tsx setlocal filetype=typescript
 "vim-js-pretty
 autocmd FileType typescript JsPreTmpl html
 autocmd FileType typescript syn clear foldBraces
+
+" vue files
+" autocmd BufNewFile,BufRead *.vue setlocal filetype=vue
+
+" angular syntax
+let g:used_javascript_libs = 'angularjs,underscore,jquery,chai'
 
 " syntactic typescript
 let g:tsuquyomi_disable_quickfix = 1
@@ -371,3 +387,4 @@ endif
 
 " show quotes in json files
 set conceallevel=0
+let g:vim_json_syntax_conceal = 0
