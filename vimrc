@@ -79,6 +79,7 @@ set autowrite
 set ff=unix
 "make local directory same as file
 "autocmd BufEnter * :lcd %:p:h
+autocmd BufEnter * if &modifiable |lcd %:p:h | endif
 autocmd BufEnter * silent! lcd %:p:h
 
 "===== General text settings =====
@@ -169,7 +170,7 @@ cmap >d e ~/Desktop/
 " edit in current dir
 cmap $$ e ./
 
-"Abbreviations
+"Abbreviations and autocorrections
 iab alos also
 iab aslo also
 iab charcter character
@@ -210,38 +211,11 @@ runtime macros/matchit.vim
 "Folding
 set foldmethod=indent
 set foldlevelstart=1
-"set foldmethod=manual
-"set foldlevel=1
-"set foldcolumn=1
-
-"Nginx support
-au BufRead,BufNewFile *.nginx set ft=nginx
-au BufRead,BufNewFile */etc/nginx/* set ft=nginx
-au BufRead,BufNewFile */usr/local/nginx/conf/* set ft=nginx
-au BufRead,BufNewFile nginx.conf set ft=nginx
 
 
 "===== Script specific settings =====
 
-
-set diffexpr=MyDiff()
-function! MyDiff()
-  let opt = ''
-  if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
-  if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
-  silent execute '!diff -a ' . opt . v:fname_in . ' ' . v:fname_new . ' > ' . v:fname_out
-endfunction
-
-"*************************************************************
-"CSV highlighter.  Handy tip.
-
-function! CSVH(x)
-    execute 'match Keyword /^\([^,]*,\)\{'.(a:x-1).'}\zs[^,]*/'
-    execute 'normal ^'.(a:x-1).'f,'
-endfunction
-
-command! -nargs=1 Csv :call CSVH(<args>)
-
+" ========================= Plugins =========================
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
@@ -253,118 +227,98 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 
 
-" The following are examples of different formats supported.
-" Keep Plugin commands between vundle#begin/end.
-" plugin on GitHub repo
+" ======================= 1. Misc Plugins =======================
+" |__ disabled
+"     |__ Plugin 'TeTrIs.vim'
+"     |__ Plugin 'mattn/calendar-vim'
 
-"I use for sure
-"misc
-"Plugin 'TeTrIs.vim'
-"Plugin 'mattn/calendar-vim'
-"Plugin 'chriskempson/vim-tomorrow-theme'
 
-"coding
-    " Close html tags.  Triggered when </ is typed.
-Plugin 'docunext/closetag.vim'
-    " Git integration
-    "Try :Gstatus, :GBrowse
-Plugin 'tpope/vim-fugitive'
-    " See git edits in gutter
-Plugin 'airblade/vim-gitgutter'
-    " match html tags
-Plugin 'gregsexton/MatchTag'
-Plugin 'Yggdroot/indentLine'
-Plugin 'scrooloose/syntastic.git'
-" visual indent guidelines for code
-Plugin 'nathanaelkane/vim-indent-guides'
+" =================== 2. File Browser Plugins ===================
 
-"editing
-"Plugin 'ervandew/supertab'
-Plugin 'Raimondi/delimitMate'
-"navigation
-  "Improve status line.
-Plugin 'bling/vim-airline'
-  " Type CTRL P in normal mode for reaching a file quickly
-Plugin 'kien/ctrlp.vim'
-  "shows marks in left margin
-"Plugin 'ShowMarks'
-"Trying out ones below.
-"Plugin 'nathanaelkane/vim-indent-guides'
-  " Quick navigation using <leader><leader>w
-Plugin 'easymotion/vim-easymotion'
-Plugin 'pangloss/vim-javascript'
-  " Navigate tags created using ctags
-Plugin 'majutsushi/tagbar'
-  " replace surrounding and matching tags
-Plugin 'tpope/vim-surround'
-"Typescript related.
-Plugin 'leafgarland/typescript-vim'
-Plugin 'Shougo/vimproc.vim'
-Plugin 'Quramy/tsuquyomi'
+" |==== nerdTree ====
 Plugin 'scrooloose/nerdtree'
-"Plugin 'Valloric/YouCompleteMe'
-
-" vue syntax
-"Plugin 'posva/vim-vue'
-
-" multiple js library syntax
-Plugin 'othree/javascript-libraries-syntax.vim'
-
-" theme
-Plugin 'Reewr/vim-monokai-phoenix'
-
-
-Plugin 'nginx.vim'
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-
-filetype plugin indent on    " required
-
-
-"typescript-vim
-"let g:typescript_compiler_binary = 'tsc'
-"let g:typescript_compiler_options = ''
-"autocmd QuickFixCmdPost [^l]* nested cwindow
-"autocmd QuickFixCmdPost    l* nested lwindow
-autocmd BufNewFile,BufRead *.ts,*.tsx setlocal filetype=typescript
-
-"vim-js-pretty
-autocmd FileType typescript JsPreTmpl html
-autocmd FileType typescript syn clear foldBraces
-
-" vue files
-" autocmd BufNewFile,BufRead *.vue setlocal filetype=vue
-
-" angular syntax
-let g:used_javascript_libs = 'angularjs,underscore,jquery,chai'
-
-" syntactic typescript
-let g:tsuquyomi_disable_quickfix = 1
-let g:syntastic_typescript_checkers = ['tsuquyomi']
-
-
-"nerdtree
+"   |____ nerdtree settings
+"     |__ always launch nerdtree when a file is opened
 autocmd vimenter * NERDTree
-"autocmd BufEnter * if &ft !~ '^nerdtree$' | silent! lcd %:p:h | endif
-"autocmd StdinReadPre * let s:std_in=1
-"autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+"     |__ \n show/unshow NerdTree
+nnoremap <Leader>n :NERDTreeToggle<Enter>
+"     |__ \f show current file in NerdTree
+nnoremap <silent> <Leader>f :NERDTreeFind<CR>
+"     |__ close nerdtree once it is opened
+let NERDTreeQuitOnOpen = 1
+"   |____ nerdTree git plug-in ====
+Plugin 'Xuyuanp/nerdtree-git-plugin'
 
-"set statusline+=%#warningmsg#
-"set statusline+=%{SyntasticStatuslineFlag()}
-"set statusline+=%*
+" |==== fzf ====
+"   |__ Required pre-step 'brew install fzf'
+"   |__ and then install fzf.vim plugin.
+Plugin 'junegunn/fzf.vim'
+set rtp+=/usr/local/opt/fzf
 
+" |==== ctrlp ====
+"   |__ Type CTRL P in normal mode for reaching a file quickly
+"   |__ Disabled
+"       |__Plugin 'ctrlpvim/ctrlp.vim'
+
+
+" =================== 3. Coding Plugins ===================
+
+" |==== vim-commentary ====
+"   |__ comment code text blocks gcc (line), gcap(para), vgc (visual)
+Plugin 'tpope/vim-commentary'
+
+" |==== vim-fugitive ====
+"   |__ plugin for git integration
+"   |__ Try :Gstatus, :GBrowse :GEdit
+Plugin 'tpope/vim-fugitive'
+
+" |==== vim-gitgutter ====
+"   |__ See git marks in gutter
+Plugin 'airblade/vim-gitgutter'
+
+" |==== MatchTag ====
+"   |__ Make % work with HTML/XML tags
+Plugin 'gregsexton/MatchTag'
+
+" |==== vim-closetag ====
+"   |__ auto close XML/HTML tags
+Plugin 'alvan/vim-closetag'
+
+" |==== delimitMate ====
+"   |__ auto insert closing parantheses
+Plugin 'Raimondi/delimitMate'
+
+"   |__ Resolve conflict between vim-closetag and delimitMate
+let g:closetag_filenames = "*.xml,*.html,*.xhtml,*.phtml,*.php"
+au FileType xml,html,phtml,php,xhtml,js let b:delimitMate_matchpairs = "(:),[:],{:}"
+
+" |==== syntastic ====
+"   |__ lint solution
+Plugin 'scrooloose/syntastic.git'
+"   |____ syntastic settings
 let g:syntastic_mode_map = {
     \ "mode": "passive",
     \ "active_filetypes": [],
     \ "passive_filetypes": []}
-
 let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
-let g:syntastic_check_on_wq = 0
+let g:syntastic_auto_loc_list            = 1
+let g:syntastic_check_on_open            = 0
+let g:syntastic_check_on_wq              = 0
 
-let g:airline_detect_modified=1
+
+
+" =================== 3. Editing Plugins ===================
+" |==== vim-multiple-cursors ====
+"   |__ ctrl n twice triggers this
+ Plugin 'terryma/vim-multiple-cursors'
+
+
+" =================== 3. Navigation Plugins ===================
+" |==== vim-airline ====
+"   |__ Improve status line.
+Plugin 'bling/vim-airline'
+"   |__ vim-airline settings.
+let g:airline_detect_modified = 1
 " Shorten Normal, Visual and Command
 let g:airline_mode_map={'c': 'C', '^S': 'S-BLOCK', 'R': 'REPLACE', 's': 'SEL', 't': 'TERMINAL', 'V': 'V-LINE', '^V': 'V-BLOCK', 'i': 'I', '__': '------', 'S': 'S-LINE', 'v': 'V', 'n': 'N'}
 let g:airline_section_x='%{getcwd()}'
@@ -372,18 +326,58 @@ let g:airline_section_z=''
 "let g:airline_right_sep=''
 let g:airline_exclude_preview = 1
 
-"
+" |==== vim-easymotion ====
+"   |__ Quick navigation using <leader><leader>w, <leader><leader>fx
+Plugin 'easymotion/vim-easymotion'
 
-let g:CtrlSpaceLoadLastWorkspaceOnStart = 1
-let g:CtrlSpaceSaveWorkspaceOnSwitch = 1
-let g:CtrlSpaceSaveWorkspaceOnExit = 1
-if executable("ag")
-    let g:CtrlSpaceGlobCommand = 'ag -l --nocolor -g ""'
-endif
+" =================== 4. Syntax Highlighting  ===================
+"  |__ Typescript related.
+Plugin 'leafgarland/typescript-vim'
+Plugin 'Shougo/vimproc.vim'
+Plugin 'Quramy/tsuquyomi'
+autocmd BufNewFile,BufRead *.ts,*.tsx setlocal filetype=typescript
+"  |__ syntactic typescript
+let g:tsuquyomi_disable_quickfix = 1
+let g:syntastic_typescript_checkers = ['tsuquyomi']
+
+"  |__ javascript related.
+Plugin 'pangloss/vim-javascript'
+"    |__ multiple js library syntax
+Plugin 'othree/javascript-libraries-syntax.vim'
+"    |_ settings
+let g:used_javascript_libs = 'angularjs,underscore,jquery,chai'
+
+"  |__ nginx support.
+Plugin 'nginx.vim'
+au BufRead,BufNewFile *.nginx set ft=nginx
+au BufRead,BufNewFile */etc/nginx/* set ft=nginx
+au BufRead,BufNewFile */usr/local/nginx/conf/* set ft=nginx
+au BufRead,BufNewFile nginx.conf set ft=nginx
+
+" =================== 5. Themes ===================
+" ==== vim-monokai-phoenix ====
+Plugin 'Reewr/vim-monokai-phoenix'
+"  |__ Disabled
+"    |__ Plugin 'chriskempson/vim-tomorrow-theme'
+
+" =================== 6. Graveyard  ===================
+"  |__ Plugin 'Yggdroot/indentLine'
+"    |__  visual indent guidelines for code
+"  |__ Plugin 'nathanaelkane/vim-indent-guides'
+"    |__ indent guides on for most files except nerdtree and help
+"    |__ let g:indent_guides_enable_on_vim_startup = 1
+"    |__ let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+
+filetype plugin indent on    " required
+
 
 if has("gui_running")
     colorscheme  monokai-phoenix
 endif
+
 
 " show quotes in json files
 set conceallevel=0
