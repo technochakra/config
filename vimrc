@@ -32,8 +32,9 @@ if has("gui_running")
     "set guifont=Andale_Mono:h12
 
     " using Source Code Pro
-    set anti enc=utf-8
-    set guifont=Source\ Code\ Pro:h18
+    "set anti enc=utf-8
+    " set guifont=Source\ Code\ Pro:h18
+    set guifont=Knack\ Regular\ Nerd\ Font\ Complete:h18
 
     "When in visual mode, copy selected text to clipboard
     set guioptions+=a
@@ -56,6 +57,7 @@ set clipboard=unnamed
 "This means be more vim like than vi
 set nocompatible
 filetype off
+set fileencoding=utf-8
 
 set backupdir=~/.vim/backup,.,/tmp
 set directory=~/.vim/swap,.,/tmp
@@ -248,6 +250,15 @@ nnoremap <silent> <Leader>f :NERDTreeFind<CR>
 let NERDTreeQuitOnOpen = 1
 "   |____ nerdTree git plug-in ====
 Plugin 'Xuyuanp/nerdtree-git-plugin'
+"   |____ icons in nerdtree
+"   Requires prestep - 'brew tap caskroom/fonts'
+"                      'brew cask install font-hack-nerd-font'
+Plugin 'ryanoasis/vim-devicons'
+" after a re-source, fix syntax matching issues (concealing brackets):
+if exists('g:loaded_webdevicons')
+    call webdevicons#refresh()
+endif
+Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
 
 " |==== fzf ====
 "   |__ Required pre-step 'brew install fzf'
@@ -260,6 +271,11 @@ set rtp+=/usr/local/opt/fzf
 "   |__ Disabled
 "       |__Plugin 'ctrlpvim/ctrlp.vim'
 
+" |==== ack ====
+"   |__ Faster grep/ack using ag
+Plugin 'mileszs/ack.vim'
+"   |__ Pre-step 'brew install the_silver_searcher'
+let g:ackprg = 'ag --nogroup --nocolor --column'
 
 " =================== 3. Coding Plugins ===================
 
@@ -294,23 +310,26 @@ au FileType xml,html,phtml,php,xhtml,js let b:delimitMate_matchpairs = "(:),[:],
 
 " |==== syntastic ====
 "   |__ lint solution
-Plugin 'scrooloose/syntastic.git'
+"Plugin 'scrooloose/syntastic.git'
 "   |____ syntastic settings
-let g:syntastic_mode_map = {
-    \ "mode": "passive",
-    \ "active_filetypes": [],
-    \ "passive_filetypes": []}
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list            = 1
-let g:syntastic_check_on_open            = 0
-let g:syntastic_check_on_wq              = 0
-
+" let g:syntastic_mode_map = {
+"     \ "mode": "passive",
+"     \ "active_filetypes": [],
+"     \ "passive_filetypes": []}
+" let g:syntastic_always_populate_loc_list = 1
+" let g:syntastic_auto_loc_list            = 1
+" let g:syntastic_check_on_open            = 0
+" let g:syntastic_check_on_wq              = 0
+" an async lint plugin
+Plugin 'w0rp/ale'
 
 
 " =================== 3. Editing Plugins ===================
 " |==== vim-multiple-cursors ====
 "   |__ ctrl n twice triggers this
  Plugin 'terryma/vim-multiple-cursors'
+ "  |__ distraction free editing.  :Goyo
+ Plugin 'junegunn/goyo.vim'
 
 
 " =================== 3. Navigation Plugins ===================
@@ -319,26 +338,37 @@ let g:syntastic_check_on_wq              = 0
 Plugin 'bling/vim-airline'
 "   |__ vim-airline settings.
 let g:airline_detect_modified = 1
+let g:airline_detect_paste=1
 " Shorten Normal, Visual and Command
 let g:airline_mode_map={'c': 'C', '^S': 'S-BLOCK', 'R': 'REPLACE', 's': 'SEL', 't': 'TERMINAL', 'V': 'V-LINE', '^V': 'V-BLOCK', 'i': 'I', '__': '------', 'S': 'S-LINE', 'v': 'V', 'n': 'N'}
 let g:airline_section_x='%{getcwd()}'
-let g:airline_section_z=''
+"let g:airline_section_z=''
 "let g:airline_right_sep=''
 let g:airline_exclude_preview = 1
+" for vim-devicons
+let g:airline_powerline_fonts = 1
+let g:airline_skip_empty_sections = 1
+let g:airline#extensions#tabline#enabled = 1
+let g:airline#extensions#tabline#tab_nr_type = 1
+let g:airline#extensions#tabline#tabs_label = 't'
+let g:airline#extensions#tabline#buffers_label = 'b'
+let g:airline#extensions#ale#enabled = 1
 
 " |==== vim-easymotion ====
 "   |__ Quick navigation using <leader><leader>w, <leader><leader>fx
 Plugin 'easymotion/vim-easymotion'
+"   |__ Nice bracket mappings
+Plugin 'tpope/vim-unimpaired'
 
 " =================== 4. Syntax Highlighting  ===================
 "  |__ Typescript related.
 Plugin 'leafgarland/typescript-vim'
-Plugin 'Shougo/vimproc.vim'
-Plugin 'Quramy/tsuquyomi'
-autocmd BufNewFile,BufRead *.ts,*.tsx setlocal filetype=typescript
-"  |__ syntactic typescript
-let g:tsuquyomi_disable_quickfix = 1
-let g:syntastic_typescript_checkers = ['tsuquyomi']
+"Plugin 'Shougo/vimproc.vim'
+"Plugin 'Quramy/tsuquyomi'
+"autocmd BufNewFile,BufRead *.ts,*.tsx setlocal filetype=typescript
+"  |__ syntastic typescript
+"let g:tsuquyomi_disable_quickfix = 1
+"let g:syntastic_typescript_checkers = ['tsuquyomi']
 
 "  |__ javascript related.
 Plugin 'pangloss/vim-javascript'
@@ -354,11 +384,19 @@ au BufRead,BufNewFile */etc/nginx/* set ft=nginx
 au BufRead,BufNewFile */usr/local/nginx/conf/* set ft=nginx
 au BufRead,BufNewFile nginx.conf set ft=nginx
 
+"  |__ color braces for better syntax
+Plugin 'kien/rainbow_parentheses.vim'
+au VimEnter * RainbowParenthesesToggle
+au Syntax * RainbowParenthesesLoadRound
+au Syntax * RainbowParenthesesLoadSquare
+au Syntax * RainbowParenthesesLoadBraces
+
 " =================== 5. Themes ===================
 " ==== vim-monokai-phoenix ====
 Plugin 'Reewr/vim-monokai-phoenix'
 "  |__ Disabled
 "    |__ Plugin 'chriskempson/vim-tomorrow-theme'
+"    |__ Plugin 'dracula/vim'
 
 " =================== 6. Graveyard  ===================
 "  |__ Plugin 'Yggdroot/indentLine'
