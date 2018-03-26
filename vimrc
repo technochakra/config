@@ -25,7 +25,7 @@ set showcmd
 set wildmenu
 set wildmode=list:longest,full
 
-if has("gui_running")
+if has('gui_running')
     "Gui font
     "set gfn=Courier:h15
     "Andale Mono is a good fixed size font.
@@ -55,7 +55,6 @@ set so=9999
 set history=100
 set clipboard=unnamed
 "This means be more vim like than vi
-set nocompatible
 filetype off
 set fileencoding=utf-8
 
@@ -81,11 +80,14 @@ set autowrite
 set ff=unix
 "make local directory same as file
 "autocmd BufEnter * :lcd %:p:h
-autocmd BufEnter * if &modifiable |lcd %:p:h | endif
-autocmd BufEnter * silent! lcd %:p:h
+augroup BufEnter_dirs
+  autocmd! BufEnter * if &modifiable |lcd %:p:h | endif
+  autocmd! BufEnter * silent! lcd %:p:h
+augroup END
 
 "===== General text settings =====
 set encoding=utf-8 nobomb
+scriptencoding utf-8
 set binary
 set noeol
 
@@ -186,8 +188,9 @@ iab teh the
 "map <leader>v :vsplit $VIM/_vimrc<cr>
 map <leader>v :tabnew ~/config/vimrc<cr>
 map <leader>s :w!<cr> :so ~/config/vimrc<cr>
-autocmd! bufwritepost vimrc source ~/config/vimrc
-
+augroup VIMRC
+  autocmd! bufwritepost vimrc source ~/config/vimrc
+augroup END
 
 "===== Coding related =====
 
@@ -241,7 +244,9 @@ Plugin 'VundleVim/Vundle.vim'
 Plugin 'scrooloose/nerdtree'
 "   |____ nerdtree settings
 "     |__ always launch nerdtree when a file is opened
-autocmd vimenter * NERDTree
+augroup NERDTREE
+  autocmd! vimenter * NERDTree
+augroup END
 "     |__ \n show/unshow NerdTree
 nnoremap <Leader>n :NERDTreeToggle<Enter>
 "     |__ \f show current file in NerdTree
@@ -268,7 +273,6 @@ set rtp+=/usr/local/opt/fzf
 
 " |==== ctrlp ====
 "   |__ Type CTRL P in normal mode for reaching a file quickly
-"   |__ Disabled
 "       |__Plugin 'ctrlpvim/ctrlp.vim'
 
 " |==== ack ====
@@ -304,22 +308,30 @@ Plugin 'alvan/vim-closetag'
 "   |__ auto insert closing parantheses
 Plugin 'Raimondi/delimitMate'
 
-"   |__ Resolve conflict between vim-closetag and delimitMate
-let g:closetag_filenames = "*.xml,*.html,*.xhtml,*.phtml,*.php"
-au FileType xml,html,phtml,php,xhtml,js let b:delimitMate_matchpairs = "(:),[:],{:}"
+" |==== indent guides ====
+"   |__ Show indent guides
+Plugin 'nathanaelkane/vim-indent-guides'
+let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
+
+let g:closetag_filenames = '*.xml,*.html,*.xhtml,*.phtml,*.php'
+augroup DELIMITMATE
+  autocmd!
+  au FileType xml,html,phtml,php,xhtml,js let b:delimitMate_matchpairs = '(:),[:],{:}'
+augroup END
 
 " |==== syntastic ====
 "   |__ lint solution
-"Plugin 'scrooloose/syntastic.git'
+Plugin 'scrooloose/syntastic.git'
 "   |____ syntastic settings
-" let g:syntastic_mode_map = {
-"     \ "mode": "passive",
-"     \ "active_filetypes": [],
-"     \ "passive_filetypes": []}
-" let g:syntastic_always_populate_loc_list = 1
-" let g:syntastic_auto_loc_list            = 1
-" let g:syntastic_check_on_open            = 0
-" let g:syntastic_check_on_wq              = 0
+ let g:syntastic_mode_map = {
+     \ 'mode': 'passive',
+     \ 'active_filetypes': [],
+     \ 'passive_filetypes': []}
+ let g:syntastic_always_populate_loc_list = 1
+ let g:syntastic_auto_loc_list            = 1
+ let g:syntastic_check_on_open            = 0
+ let g:syntastic_check_on_wq              = 0
 " an async lint plugin
 Plugin 'w0rp/ale'
 
@@ -348,10 +360,10 @@ let g:airline_exclude_preview = 1
 " for vim-devicons
 let g:airline_powerline_fonts = 1
 let g:airline_skip_empty_sections = 1
-let g:airline#extensions#tabline#enabled = 1
-let g:airline#extensions#tabline#tab_nr_type = 1
-let g:airline#extensions#tabline#tabs_label = 't'
-let g:airline#extensions#tabline#buffers_label = 'b'
+" let g:airline#extensions#tabline#enabled = 1
+" let g:airline#extensions#tabline#tab_nr_type = 1
+" let g:airline#extensions#tabline#tabs_label = 't'
+" let g:airline#extensions#tabline#buffers_label = 'b'
 let g:airline#extensions#ale#enabled = 1
 
 " |==== vim-easymotion ====
@@ -359,6 +371,8 @@ let g:airline#extensions#ale#enabled = 1
 Plugin 'easymotion/vim-easymotion'
 "   |__ Nice bracket mappings
 Plugin 'tpope/vim-unimpaired'
+"   |__ Show marks in gutter
+Plugin 'kshenoy/vim-signature'
 
 " =================== 4. Syntax Highlighting  ===================
 "  |__ Typescript related.
@@ -379,17 +393,22 @@ let g:used_javascript_libs = 'angularjs,underscore,jquery,chai'
 
 "  |__ nginx support.
 Plugin 'nginx.vim'
-au BufRead,BufNewFile *.nginx set ft=nginx
-au BufRead,BufNewFile */etc/nginx/* set ft=nginx
-au BufRead,BufNewFile */usr/local/nginx/conf/* set ft=nginx
-au BufRead,BufNewFile nginx.conf set ft=nginx
-
+augroup NGINX
+  autocmd!
+  au BufRead,BufNewFile *.nginx set ft=nginx
+  au BufRead,BufNewFile */etc/nginx/* set ft=nginx
+  au BufRead,BufNewFile */usr/local/nginx/conf/* set ft=nginx
+  au BufRead,BufNewFile nginx.conf set ft=nginx
+augroup END
 "  |__ color braces for better syntax
 Plugin 'kien/rainbow_parentheses.vim'
-au VimEnter * RainbowParenthesesToggle
-au Syntax * RainbowParenthesesLoadRound
-au Syntax * RainbowParenthesesLoadSquare
-au Syntax * RainbowParenthesesLoadBraces
+augroup RAINBOWPARENTHESES
+  autocmd!
+  au VimEnter * RainbowParenthesesToggle
+  au Syntax * RainbowParenthesesLoadRound
+  au Syntax * RainbowParenthesesLoadSquare
+  au Syntax * RainbowParenthesesLoadBraces
+augroup END
 
 " =================== 5. Themes ===================
 " ==== vim-monokai-phoenix ====
@@ -401,10 +420,6 @@ Plugin 'Reewr/vim-monokai-phoenix'
 " =================== 6. Graveyard  ===================
 "  |__ Plugin 'Yggdroot/indentLine'
 "    |__  visual indent guidelines for code
-"  |__ Plugin 'nathanaelkane/vim-indent-guides'
-"    |__ indent guides on for most files except nerdtree and help
-"    |__ let g:indent_guides_enable_on_vim_startup = 1
-"    |__ let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -412,11 +427,5 @@ call vundle#end()            " required
 filetype plugin indent on    " required
 
 
-if has("gui_running")
-    colorscheme  monokai-phoenix
-endif
+colorscheme  monokai-phoenix
 
-
-" show quotes in json files
-set conceallevel=0
-let g:vim_json_syntax_conceal = 0
