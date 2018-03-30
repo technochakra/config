@@ -9,19 +9,86 @@
 " The above steps will get you the preferred GUI font, the vimrc settings and the plugin manager
 " Tools to install - js-beautify, jshint, ctags (exuberant), the_silver_searcher
 
-"=====UI Settings =====
-"always show the status line
+" ===== VIM Settings =====
+
+set encoding=utf-8 
+" set fileencoding same as encoding so that there is no conversion.
+set fileencoding=utf-8
+" set the encoding of vimrc same as encoding
+scriptencoding utf-8
+" always use unix line endings
+set fileformat=unix
+
+" prefer to create backup / swap files in a common location instead of the current dir
+set backupdir=~/.vim/backup,.
+set directory=~/.vim/swap,.
+
+" use system clipboard for cut/copy/pasting
+set clipboard=unnamed
+
+
+
+"make local directory same as file
+augroup BufEnter_dirs
+  autocmd! BufEnter * if &modifiable |lcd %:p:h | endif
+  autocmd! BufEnter * silent! lcd %:p:h
+augroup END
+
+" ===== Key mappings and shortcuts =====
+
+" Window moving features.
+" CTRL + {j,k,l,h} to jump between windows.
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-l> <C-W>l
+map <C-h> <C-W>h
+
+"Key mappings for ease (very helpful)
+map <up> gk
+map <down> gj
+
+
+" toggle wrap
+map <leader>w :set wrap!<cr>
+
+" toggle showing hidden stuff
+map <leader>l :set list!<cr>
+
+
+" yank hex numbers as decimals
+"map <leader>y :let @*=<C-R><C-W> +0<cr>
+
+" replace word under cursor
+nmap <leader>; :%s/\<<c-r>=expand("<cword>")<cr>\>/
+
+" turn spelling on for current buffer
+nmap <Leader>sp :setlocal spell spelllang=en_us<cr>
+
+" quick editing / sourcing _vimrc file
+map <leader>v :tabnew ~/config/vimrc<cr>
+map <leader>s :w!<cr> :so ~/config/vimrc<cr>
+" immediately source vimrc when it is written to.
+autocmd! bufwritepost vimrc source ~/config/vimrc
+
+
+" ===== UI Settings =====
+" always show the status line.  Needed by airline
 set laststatus=2
 
-"set statusline=%<%f%m%r%{&ff}\ %y%={%{getcwd()}}\ [byte=%b,0x%B]\ [line=%l][col=%c%V]\ %P
-set ruler
+" add one more extra line below airline
 set cmdheight=2
-set helpheight=4
-set cursorline
 
+" highlight the complete line that has the cursor
+set cursorline
+" keep the cursor always in the middle of the screen
+set so=9999
+
+"
 "Show partial commands
 set showcmd
-" Used in tab completion on the command mode
+" Show visual / insert at bottom of screen on switching mode.
+set showmode
+" command mode autocompletion
 set wildmenu
 set wildmode=list:longest,full
 
@@ -40,56 +107,13 @@ if has('gui_running')
     set guioptions+=a
     set guioptions-=T
     set guitablabel=[%N]\ %f
-    "Soothing background
-    let macvim_skip_colorscheme=1
-    "colorscheme darkblue
-else
-    colorscheme murphy
 endif
 
-"Becoz of the scroll option, the up and down keeps the cursor in the middle.
-set so=9999
-
-"===== VIM settings =====
-"history for undo
-set history=100
-set clipboard=unnamed
-"This means be more vim like than vi
-filetype off
-set fileencoding=utf-8
-
-set backupdir=~/.vim/backup,.,/tmp
-set directory=~/.vim/swap,.,/tmp
-
-set secure
-
-" Do not start in insert mode
-set noinsertmode
-
-"Show visual / insert at end when a mode is switched
-set showmode
-
-set noerrorbells
-set novisualbell
-set lazyredraw
-set hidden
 
 
-" Autosave
-set autowrite
-set ff=unix
-"make local directory same as file
-"autocmd BufEnter * :lcd %:p:h
-augroup BufEnter_dirs
-  autocmd! BufEnter * if &modifiable |lcd %:p:h | endif
-  autocmd! BufEnter * silent! lcd %:p:h
-augroup END
+
 
 "===== General text settings =====
-set encoding=utf-8 nobomb
-scriptencoding utf-8
-set binary
-set noeol
 
 set ic
 set hlsearch
@@ -98,81 +122,16 @@ set nu
 set nowrap
 set nolist
 
-set tabstop=2
-set expandtab
-set shiftwidth=4
-
-set autoindent
-set smartindent
-set magic
-
 " The way tabs and trailing characters should look like
 "set listchars+=tab:»·,trail:·
 set listchars+=tab:\|\
 
 
-"=====Key mappings and shortcuts =====
-
-"When right and left are pressed at BOL or EOL, then the cursor will jump to the previous or next line.
+" helps move from lines that only have BOL+EOL. the arrow keys will now allow it to go to the prev/next line.
 set ww+=<,>
 set backspace=indent,eol,start
 set nostartofline
 
-"My Mappings
-" toggle wrap on / off
-map <leader>w :set wrap!<cr>
-
-" toggle showing of hidden stuff
-map <leader>l :set list!<cr>
-
-"window moving features.  handy to use
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-l> <C-W>l
-map <C-h> <C-W>h
-
-"Key mappings for ease (very helpful)
-map <up> gk
-map <down> gj
-
-"Yank hex numbers as decimals
-"map <leader>y :let @*=<C-R><C-W> +0<cr>
-
-" clean the dirty looking screen after a highlight search
-"map <F12> :let @/=""<cr> :echo "Highlights Cleared"<cr>
-
-" Tab shortcuts
-map <leader>tn :tabnew %<cr>
-map <leader>tc :tabclose<cr>
-map <leader>tm :tabmove
-map <leader>te :tabedit
-
-" Normal mode mappings
-"replace word under cursor
-nmap <leader>; :%s/\<<c-r>=expand("<cword>")<cr>\>/
-" in normal mode insert one character
-"nmap <leader>i i<space><Esc>r
-
-" Turn spelling on for current buffer
-nmap <Leader>sp :setlocal spell spelllang=en_us<cr>
-
-" move up and down one line in insert mode
-
-" move up and down one line in insert mode
-" DISABLED up, down due to conflict with tab autocompletion
-"imap <up> <C-o>gk
-""imap <down> <C-o>gj
-" command line mapping
-" expand to full filename
-cmap >fn <c-r>=expand('%:p')<cr>
-" expand to current directory
-cmap >fd <c-r>=expand('%:p:h').'/'<cr>
-" expand to home directory
-cmap >h e ~/
-" expand to desktop
-cmap >d e ~/Desktop/
-" edit in current dir
-cmap $$ e ./
 
 "Abbreviations and autocorrections
 iab alos also
@@ -184,15 +143,15 @@ iab shoudl should
 iab seperate separate
 iab teh the
 
-"More mappings for quick editing / sourcing _vimrc file
-"map <leader>v :vsplit $VIM/_vimrc<cr>
-map <leader>v :tabnew ~/config/vimrc<cr>
-map <leader>s :w!<cr> :so ~/config/vimrc<cr>
-augroup VIMRC
-  autocmd! bufwritepost vimrc source ~/config/vimrc
-augroup END
 
 "===== Coding related =====
+
+set tabstop=2
+set expandtab
+set shiftwidth=4
+
+set autoindent
+set smartindent
 
 syntax enable
 
@@ -209,9 +168,7 @@ set shellpipe=\|\ tee
 
 "show matching braces
 set showmatch
-set matchtime=5
 
-runtime macros/matchit.vim
 
 "Folding
 set foldmethod=indent
@@ -283,9 +240,7 @@ let g:ackprg = 'ag --nogroup --nocolor --column'
 
 " =================== 3. Coding Plugins ===================
 
-" |==== vim-commentary ====
-"   |__ comment code text blocks gcc (line), gcap(para), vgc (visual)
-Plugin 'tpope/vim-commentary'
+" |==== vim-commentary ==== "   |__ comment code text blocks gcc (line), gcap(para), vgc (visual) Plugin 'tpope/vim-commentary'
 
 " |==== vim-fugitive ====
 "   |__ plugin for git integration
@@ -429,3 +384,4 @@ filetype plugin indent on    " required
 
 colorscheme  monokai-phoenix
 
+set secure
