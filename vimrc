@@ -11,9 +11,8 @@
 
 " ===== VIM Settings =====
 
-set encoding=utf-8 
+set encoding=utf-8
 " set fileencoding same as encoding so that there is no conversion.
-set fileencoding=utf-8
 " set the encoding of vimrc same as encoding
 scriptencoding utf-8
 " always use unix line endings
@@ -30,8 +29,9 @@ set clipboard=unnamed
 
 "make local directory same as file
 augroup BufEnter_dirs
-  autocmd! BufEnter * if &modifiable |lcd %:p:h | endif
-  autocmd! BufEnter * silent! lcd %:p:h
+  autocmd!
+  autocmd BufEnter * if &modifiable |lcd %:p:h | endif
+  autocmd BufEnter * silent! lcd %:p:h
 augroup END
 
 " ===== Key mappings and shortcuts =====
@@ -68,7 +68,7 @@ nmap <Leader>sp :setlocal spell spelllang=en_us<cr>
 map <leader>v :tabnew ~/config/vimrc<cr>
 map <leader>s :w!<cr> :so ~/config/vimrc<cr>
 " immediately source vimrc when it is written to.
-autocmd! bufwritepost vimrc source ~/config/vimrc
+autocmd bufwritepost vimrc source ~/config/vimrc
 
 
 " ===== UI Settings =====
@@ -202,7 +202,8 @@ Plugin 'scrooloose/nerdtree'
 "   |____ nerdtree settings
 "     |__ always launch nerdtree when a file is opened
 augroup NERDTREE
-  autocmd! vimenter * NERDTree
+  autocmd!
+  autocmd vimenter * NERDTree
 augroup END
 "     |__ \n show/unshow NerdTree
 nnoremap <Leader>n :NERDTreeToggle<Enter>
