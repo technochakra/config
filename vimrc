@@ -14,6 +14,7 @@
 set encoding=utf-8
 " Turn off error bells
 set noerrorbells
+set belloff=all
 autocmd! GUIEnter * set vb t_vb=
 " set fileencoding same as encoding so that there is no conversion.
 " set the encoding of vimrc same as encoding
@@ -22,9 +23,9 @@ scriptencoding utf-8
 set fileformat=unix
 
 " prefer to create backup / swap files in a common location instead of the current dir
-" set backupdir=~/.vim/backup,.
+ set backupdir=~/.vim/backup,.
 " set directory=~/.vim/swap,.
-set nobackup
+"set nobackup
 set noswapfile
 set undodir=~/.vim/undo
 set undofile
@@ -32,34 +33,43 @@ set undofile
 " use system clipboard for cut/copy/pasting
 set clipboard=unnamed
 
+let mapleader=" "
+autocmd!
 
 
 "make local directory same as file
 augroup BufEnter_dirs
-  autocmd!
-  autocmd BufEnter * if &modifiable |lcd %:p:h | endif
-  autocmd BufEnter * silent! lcd %:p:h
+    autocmd!
+    autocmd BufEnter * if &modifiable |lcd %:p:h | endif
+    autocmd BufEnter * silent! lcd %:p:h
 augroup END
 
 " ===== Key mappings and shortcuts =====
 
 " Window moving features.
 " CTRL + {j,k,l,h} to jump between windows.
-map <C-j> <C-W>j
-map <C-k> <C-W>k
-map <C-l> <C-W>l
-map <C-h> <C-W>h
+nmap <C-j> <C-W>j
+nmap <C-k> <C-W>k
+nmap <C-l> <C-W>l
+nmap <C-h> <C-W>h
+
+nnoremap <leader>h :wincmd h<CR>
+nnoremap <leader>j :wincmd j<CR>
+nnoremap <leader>k :wincmd k<CR>
+nnoremap <leader>l :wincmd l<CR>
 
 "Key mappings for ease (very helpful)
-map <up> gk
-map <down> gj
+nmap <up> gk
+nmap <down> gj
 
+" open help in new tab
+cabbrev help tab help
 
 " toggle wrap
-map <leader>w :set wrap!<cr>
+nmap <leader>w :set wrap!<cr>
 
 " toggle showing hidden stuff
-map <leader>l :set list!<cr>
+"map <leader>l :set list!<cr>
 
 
 " yank hex numbers as decimals
@@ -72,11 +82,12 @@ nmap <leader>; :%s/\<<c-r>=expand("<cword>")<cr>\>/
 nmap <Leader>sp :setlocal spell spelllang=en_us<cr>
 
 " quick editing / sourcing _vimrc file
-map <leader>v :tabnew ~/config/vimrc<cr>
-map <leader>s :w!<cr> :so ~/config/vimrc<cr>
+nmap <leader>v :tabnew ~/config/vimrc<cr>
+nmap <leader>s :w!<cr> :so ~/config/vimrc<cr>
 " immediately source vimrc when it is written to.
 autocmd bufwritepost vimrc source ~/config/vimrc
 
+vnoremap <leader>p "_dP
 
 " ===== UI Settings =====
 " always show the status line.  Needed by airline
@@ -125,6 +136,7 @@ set ic
 set hlsearch
 set incsearch
 set nu
+set relativenumber
 set nowrap
 set nolist
 
@@ -177,7 +189,7 @@ set showmatch
 
 "Folding
 set foldmethod=indent
-set foldlevelstart=1
+"set foldlevelstart=1
 
 
 "===== Script specific settings =====
@@ -192,7 +204,7 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'tpope/vim-fugitive'
 
 " See git marks in gutter
-" Plug 'airblade/vim-gitgutter'
+Plug 'airblade/vim-gitgutter'
 
 " Make % work with HTML/XML tags
 Plug 'gregsexton/MatchTag'
@@ -209,13 +221,17 @@ Plug 'nathanaelkane/vim-indent-guides'
 " Distraction free editing.  :Goyo
 Plug 'junegunn/goyo.vim'
 
-"   |__ Improve status line.
+" Improve status line.
 Plug 'bling/vim-airline'
 
 " Color theme
 Plug 'Reewr/vim-monokai-phoenix'
 
 Plug 'mbbill/undotree'
+
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'stsewd/fzf-checkout.vim'
 function! BuildYCM(info)
     if a:info.status == 'installed' || a:info.force
         !./install.py
@@ -224,7 +240,26 @@ endfunction
 
 Plug 'git@github.com:ycm-core/YouCompleteMe', { 'do': function('BuildYCM') }
 
+" Plugins for web, javascript developement
+Plug 'pangloss/vim-javascript'
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
+Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
+Plug 'jparise/vim-graphql'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
+
+let g:coc_global_extensions = [
+  \ 'coc-tsserver'
+  \ ]
+
+if isdirectory('./node_modules') && isdirectory('./node_modules/prettier')
+  let g:coc_global_extensions += ['coc-prettier']
+endif
+
+if isdirectory('./node_modules') && isdirectory('./node_modules/eslint')
+  let g:coc_global_extensions += ['coc-eslint']
+endif
 
 " indent guides
 let g:indent_guides_enable_on_vim_startup = 1
@@ -237,6 +272,9 @@ augroup DELIMITMATE
     au FileType xml,html,phtml,php,xhtml,js let b:delimitMate_matchpairs = '(:),[:],{:}'
 augroup END
 
+" git fugitive shortcuts
+nmap <leader>gs :G<CR>
+nmap <leader>gc :Gcommit<CR>
 
 let g:airline_detect_modified = 1
 let g:airline_detect_paste=1
@@ -247,15 +285,38 @@ let g:airline_section_x='%{getcwd()}'
 "let g:airline_right_sep=''
 let g:airline_exclude_preview = 1
 " for vim-devicons
-let g:airline_powerline_fonts = 1
+"let g:airline_powerline_fonts = 1
 let g:airline_skip_empty_sections = 1
 " let g:airline#extensions#tabline#enabled = 1
 " let g:airline#extensions#tabline#tab_nr_type = 1
 " let g:airline#extensions#tabline#tabs_label = 't'
 " let g:airline#extensions#tabline#buffers_label = 'b'
-let g:airline#extensions#ale#enabled = 1
+" let g:airline#extensions#ale#enabled = 1
+if !exists('g:airline_symbols')
+    let g:airline_symbols = {}
+endif
+let g:airline_left_sep = '»'
+let g:airline_left_sep = '▶'
+let g:airline_right_sep = '«'
+let g:airline_right_sep = '◀'
+let g:airline_symbols.crypt = '🔒'
+let g:airline_symbols.linenr = '☰'
+let g:airline_symbols.linenr = '␊'
+let g:airline_symbols.linenr = '␤'
+let g:airline_symbols.linenr = '¶'
+let g:airline_symbols.maxlinenr = ''
+let g:airline_symbols.maxlinenr = '㏑'
+let g:airline_symbols.branch = '⎇'
+let g:airline_symbols.paste = 'ρ'
+let g:airline_symbols.paste = 'Þ'
+let g:airline_symbols.paste = '∥'
+let g:airline_symbols.spell = 'Ꞩ'
+let g:airline_symbols.notexists = 'Ɇ'
+let g:airline_symbols.whitespace = 'Ξ'
 
-nnoremap <leader>u :UndotreeShow<CR>
+
+
+nnoremap <leader>u :UndotreeToggle<CR>
 
 
 let g:netrw_browse_split = 4
@@ -266,9 +327,9 @@ noremap <leader>pv :wincmd v<bar> :Ex <bar> :vertical resize 20<CR>
 
 filetype plugin indent on    " required
 
+set background=dark
 if has('gui_running')
     colorscheme  monokai-phoenix
-    set background=dark
 else
     colorscheme desert
 endif
