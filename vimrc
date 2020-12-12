@@ -275,6 +275,7 @@ augroup END
 " git fugitive shortcuts
 nmap <leader>gs :G<CR>
 nmap <leader>gc :Gcommit<CR>
+nmap <leader>gp :Gpush<CR>
 
 let g:airline_detect_modified = 1
 let g:airline_detect_paste=1
