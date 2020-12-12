@@ -3,15 +3,18 @@
 " Steps to setup
 " 1. Clone file from git and place it in ~/config/.
 " 2. On Mac/Linux create ~/.vimrc and so ~/config/vimrc from it.
-" 3. Download vundle from - https://github.com/VundleVim/Vundle.vim
+" 3. Download plug for plugin management
 " 4. Download Adobe Source Code Pro font from https://github.com/adobe-fonts/source-code-pro
-" 5. run :PluginInstall
+" 5. run :PlugInstall
 " The above steps will get you the preferred GUI font, the vimrc settings and the plugin manager
 " Tools to install - js-beautify, jshint, ctags (exuberant), the_silver_searcher
 
 " ===== VIM Settings =====
 
 set encoding=utf-8
+" Turn off error bells
+set noerrorbells
+autocmd! GUIEnter * set vb t_vb=
 " set fileencoding same as encoding so that there is no conversion.
 " set the encoding of vimrc same as encoding
 scriptencoding utf-8
@@ -19,8 +22,12 @@ scriptencoding utf-8
 set fileformat=unix
 
 " prefer to create backup / swap files in a common location instead of the current dir
-set backupdir=~/.vim/backup,.
-set directory=~/.vim/swap,.
+" set backupdir=~/.vim/backup,.
+" set directory=~/.vim/swap,.
+set nobackup
+set noswapfile
+set undodir=~/.vim/undo
+set undofile
 
 " use system clipboard for cut/copy/pasting
 set clipboard=unnamed
@@ -100,8 +107,7 @@ if has('gui_running')
 
     " using Source Code Pro
     "set anti enc=utf-8
-    " set guifont=Source\ Code\ Pro:h18
-    set guifont=Knack\ Regular\ Nerd\ Font\ Complete:h18
+    set guifont=Source\ Code\ Pro:h18
 
     "When in visual mode, copy selected text to clipboard
     set guioptions+=a
@@ -146,23 +152,22 @@ iab teh the
 
 "===== Coding related =====
 
-set tabstop=2
+" keep tabstop, shiftwidth, softtabstop to the same value
+set tabstop=4
+" spaces not tabs
 set expandtab
+" indentation width
 set shiftwidth=4
+" allows backspace to remove tabs even if they are spaces
+set softtabstop=4
 
 set autoindent
 set smartindent
 
+" vertical column to show the 80 column mark
+set colorcolumn=80
+
 syntax enable
-
-"Handy for searching for include files.
-:set path=../include,../resources,../h,../includes,.,../inc
-
-"Make program that I commonly use
-:set makeprg=g++\ -g\ -Wall\ %\ 2>&1
-
-"grep program with ignore case
-set grepprg=grep\ -n\ -H\ -i
 
 set shellpipe=\|\ tee
 
@@ -178,133 +183,61 @@ set foldlevelstart=1
 "===== Script specific settings =====
 
 " ========================= Plugins =========================
+call plug#begin()
+" Type CTRL P in normal mode for reaching a file quickly
+Plug 'ctrlpvim/ctrlp.vim'
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-"call vundle#begin('~/some/path/here')
+" plugin for git integration
+" Try :Gstatus, :GBrowse :GEdit :GCommit
+Plug 'tpope/vim-fugitive'
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+" See git marks in gutter
+" Plug 'airblade/vim-gitgutter'
 
+" Make % work with HTML/XML tags
+Plug 'gregsexton/MatchTag'
 
-" ======================= 1. Misc Plugins =======================
-" |__ disabled
-"     |__ Plugin 'TeTrIs.vim'
-"     |__ Plugin 'mattn/calendar-vim'
+" Auto close XML/HTML tags
+Plug 'alvan/vim-closetag'
 
+" auto insert closing parantheses
+Plug 'Raimondi/delimitMate'
 
-" =================== 2. File Browser Plugins ===================
+" Show indent guides
+Plug 'nathanaelkane/vim-indent-guides'
 
-" |==== nerdTree ====
-Plugin 'scrooloose/nerdtree'
-"   |____ nerdtree settings
-"     |__ always launch nerdtree when a file is opened
-augroup NERDTREE
-  autocmd!
-  autocmd vimenter * NERDTree
-augroup END
-"     |__ \n show/unshow NerdTree
-nnoremap <Leader>n :NERDTreeToggle<Enter>
-"     |__ \f show current file in NerdTree
-nnoremap <silent> <Leader>f :NERDTreeFind<CR>
-"     |__ close nerdtree once it is opened
-let NERDTreeQuitOnOpen = 1
-"   |____ nerdTree git plug-in ====
-Plugin 'Xuyuanp/nerdtree-git-plugin'
-"   |____ icons in nerdtree
-"   Requires prestep - 'brew tap caskroom/fonts'
-"                      'brew cask install font-hack-nerd-font'
-Plugin 'ryanoasis/vim-devicons'
-" after a re-source, fix syntax matching issues (concealing brackets):
-if exists('g:loaded_webdevicons')
-    call webdevicons#refresh()
-endif
-Plugin 'tiagofumo/vim-nerdtree-syntax-highlight'
+" Distraction free editing.  :Goyo
+Plug 'junegunn/goyo.vim'
 
-" |==== fzf ====
-"   |__ Required pre-step 'brew install fzf'
-"   |__ and then install fzf.vim plugin.
-Plugin 'junegunn/fzf.vim'
-set rtp+=/usr/local/opt/fzf
+"   |__ Improve status line.
+Plug 'bling/vim-airline'
 
-" |==== ctrlp ====
-"   |__ Type CTRL P in normal mode for reaching a file quickly
-"       |__Plugin 'ctrlpvim/ctrlp.vim'
+" Color theme
+Plug 'Reewr/vim-monokai-phoenix'
 
-" |==== ack ====
-"   |__ Faster grep/ack using ag
-Plugin 'mileszs/ack.vim'
-"   |__ Pre-step 'brew install the_silver_searcher'
-let g:ackprg = 'ag --nogroup --nocolor --column'
+Plug 'mbbill/undotree'
+function! BuildYCM(info)
+    if a:info.status == 'installed' || a:info.force
+        !./install.py
+    endif
+endfunction
 
-" =================== 3. Coding Plugins ===================
+Plug 'git@github.com:ycm-core/YouCompleteMe', { 'do': function('BuildYCM') }
 
-" |==== vim-commentary ==== "   |__ comment code text blocks gcc (line), gcap(para), vgc (visual) Plugin 'tpope/vim-commentary'
+call plug#end()
 
-" |==== vim-fugitive ====
-"   |__ plugin for git integration
-"   |__ Try :Gstatus, :GBrowse :GEdit
-Plugin 'tpope/vim-fugitive'
-
-" |==== vim-gitgutter ====
-"   |__ See git marks in gutter
-Plugin 'airblade/vim-gitgutter'
-
-" |==== MatchTag ====
-"   |__ Make % work with HTML/XML tags
-Plugin 'gregsexton/MatchTag'
-
-" |==== vim-closetag ====
-"   |__ auto close XML/HTML tags
-Plugin 'alvan/vim-closetag'
-
-" |==== delimitMate ====
-"   |__ auto insert closing parantheses
-Plugin 'Raimondi/delimitMate'
-
-" |==== indent guides ====
-"   |__ Show indent guides
-Plugin 'nathanaelkane/vim-indent-guides'
+" indent guides
 let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_exclude_filetypes = ['help', 'nerdtree']
 
 let g:closetag_filenames = '*.xml,*.html,*.xhtml,*.phtml,*.php'
+
 augroup DELIMITMATE
-  autocmd!
-  au FileType xml,html,phtml,php,xhtml,js let b:delimitMate_matchpairs = '(:),[:],{:}'
+    autocmd!
+    au FileType xml,html,phtml,php,xhtml,js let b:delimitMate_matchpairs = '(:),[:],{:}'
 augroup END
 
-" |==== syntastic ====
-"   |__ lint solution
-Plugin 'scrooloose/syntastic.git'
-"   |____ syntastic settings
- let g:syntastic_mode_map = {
-     \ 'mode': 'passive',
-     \ 'active_filetypes': [],
-     \ 'passive_filetypes': []}
- let g:syntastic_always_populate_loc_list = 1
- let g:syntastic_auto_loc_list            = 1
- let g:syntastic_check_on_open            = 0
- let g:syntastic_check_on_wq              = 0
-" an async lint plugin
-Plugin 'w0rp/ale'
 
-
-" =================== 3. Editing Plugins ===================
-" |==== vim-multiple-cursors ====
-"   |__ ctrl n twice triggers this
- Plugin 'terryma/vim-multiple-cursors'
- "  |__ distraction free editing.  :Goyo
- Plugin 'junegunn/goyo.vim'
-
-
-" =================== 3. Navigation Plugins ===================
-" |==== vim-airline ====
-"   |__ Improve status line.
-Plugin 'bling/vim-airline'
-"   |__ vim-airline settings.
 let g:airline_detect_modified = 1
 let g:airline_detect_paste=1
 " Shorten Normal, Visual and Command
@@ -322,67 +255,21 @@ let g:airline_skip_empty_sections = 1
 " let g:airline#extensions#tabline#buffers_label = 'b'
 let g:airline#extensions#ale#enabled = 1
 
-" |==== vim-easymotion ====
-"   |__ Quick navigation using <leader><leader>w, <leader><leader>fx
-Plugin 'easymotion/vim-easymotion'
-"   |__ Nice bracket mappings
-Plugin 'tpope/vim-unimpaired'
-"   |__ Show marks in gutter
-Plugin 'kshenoy/vim-signature'
+nnoremap <leader>u :UndotreeShow<CR>
 
-" =================== 4. Syntax Highlighting  ===================
-"  |__ Typescript related.
-Plugin 'leafgarland/typescript-vim'
-"Plugin 'Shougo/vimproc.vim'
-"Plugin 'Quramy/tsuquyomi'
-"autocmd BufNewFile,BufRead *.ts,*.tsx setlocal filetype=typescript
-"  |__ syntastic typescript
-"let g:tsuquyomi_disable_quickfix = 1
-"let g:syntastic_typescript_checkers = ['tsuquyomi']
 
-"  |__ javascript related.
-Plugin 'pangloss/vim-javascript'
-"    |__ multiple js library syntax
-Plugin 'othree/javascript-libraries-syntax.vim'
-"    |_ settings
-let g:used_javascript_libs = 'angularjs,underscore,jquery,chai'
+let g:netrw_browse_split = 4
+let g:netrw_banner = 0
+let g:netrw_winsize = 20
 
-"  |__ nginx support.
-Plugin 'nginx.vim'
-augroup NGINX
-  autocmd!
-  au BufRead,BufNewFile *.nginx set ft=nginx
-  au BufRead,BufNewFile */etc/nginx/* set ft=nginx
-  au BufRead,BufNewFile */usr/local/nginx/conf/* set ft=nginx
-  au BufRead,BufNewFile nginx.conf set ft=nginx
-augroup END
-"  |__ color braces for better syntax
-Plugin 'kien/rainbow_parentheses.vim'
-augroup RAINBOWPARENTHESES
-  autocmd!
-  au VimEnter * RainbowParenthesesToggle
-  au Syntax * RainbowParenthesesLoadRound
-  au Syntax * RainbowParenthesesLoadSquare
-  au Syntax * RainbowParenthesesLoadBraces
-augroup END
-
-" =================== 5. Themes ===================
-" ==== vim-monokai-phoenix ====
-Plugin 'Reewr/vim-monokai-phoenix'
-"  |__ Disabled
-"    |__ Plugin 'chriskempson/vim-tomorrow-theme'
-"    |__ Plugin 'dracula/vim'
-
-" =================== 6. Graveyard  ===================
-"  |__ Plugin 'Yggdroot/indentLine'
-"    |__  visual indent guidelines for code
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
+noremap <leader>pv :wincmd v<bar> :Ex <bar> :vertical resize 20<CR>
 
 filetype plugin indent on    " required
 
-
-colorscheme  monokai-phoenix
-
+if has('gui_running')
+    colorscheme  monokai-phoenix
+    set background=dark
+else
+    colorscheme desert
+endif
 set secure
