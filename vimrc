@@ -34,6 +34,8 @@ set undofile
 set clipboard=unnamed
 
 let mapleader=" "
+map \ <leader>
+
 autocmd!
 
 
@@ -50,13 +52,20 @@ augroup END
 " CTRL + {j,k,l,h} to jump between windows.
 nmap <C-j> <C-W>j
 nmap <C-k> <C-W>k
-nmap <C-l> <C-W>l
+nnoremap <C-l> <C-W>l
 nmap <C-h> <C-W>h
 
 nnoremap <leader>h :wincmd h<CR>
 nnoremap <leader>j :wincmd j<CR>
 nnoremap <leader>k :wincmd k<CR>
 nnoremap <leader>l :wincmd l<CR>
+
+
+nnoremap <leader>gw 20<C-W>>
+nnoremap <leader>gW 20<C-W><
+
+vmap < <gv
+vmap > >gv
 
 "Key mappings for ease (very helpful)
 nmap <up> gk
@@ -96,8 +105,6 @@ set laststatus=2
 " add one more extra line below airline
 set cmdheight=2
 
-" highlight the complete line that has the cursor
-set cursorline
 " keep the cursor always in the middle of the screen
 set so=9999
 
@@ -188,7 +195,7 @@ set showmatch
 
 
 "Folding
-set foldmethod=indent
+"set foldmethod=indent
 "set foldlevelstart=1
 
 
@@ -198,6 +205,15 @@ set foldmethod=indent
 call plug#begin()
 " Type CTRL P in normal mode for reaching a file quickly
 Plug 'ctrlpvim/ctrlp.vim'
+
+" search in file. Install rg first
+Plug 'jremmen/vim-ripgrep'
+
+" Search and replace across project
+Plug 'dyng/ctrlsf.vim'
+
+" highlight yanked text
+Plug 'machakann/vim-highlightedyank'
 
 " plugin for git integration
 " Try :Gstatus, :GBrowse :GEdit :GCommit
@@ -215,8 +231,14 @@ Plug 'alvan/vim-closetag'
 " auto insert closing parantheses
 Plug 'Raimondi/delimitMate'
 
+" make surround quotes stuff faster
+Plug 'tpope/vim-surround'
+
 " Show indent guides
-Plug 'nathanaelkane/vim-indent-guides'
+"Plug 'nathanaelkane/vim-indent-guides'
+
+" show marks in gutter
+Plug 'kshenoy/vim-signature'
 
 " Distraction free editing.  :Goyo
 Plug 'junegunn/goyo.vim'
@@ -224,21 +246,22 @@ Plug 'junegunn/goyo.vim'
 " Improve status line.
 Plug 'bling/vim-airline'
 
+" Airline theme
+Plug 'vim-airline/vim-airline-themes'
+Plug 'mhinz/vim-startify'
+
 " Color theme
 Plug 'Reewr/vim-monokai-phoenix'
+Plug 'patstockwell/vim-monokai-tasty'
+Plug 'morhetz/gruvbox'
+Plug 'kyoz/purify'
+Plug 'tomasr/molokai'
 
 Plug 'mbbill/undotree'
 
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-Plug 'stsewd/fzf-checkout.vim'
-function! BuildYCM(info)
-    if a:info.status == 'installed' || a:info.force
-        !./install.py
-    endif
-endfunction
-
-Plug 'git@github.com:ycm-core/YouCompleteMe', { 'do': function('BuildYCM') }
+"Plug 'stsewd/fzf-checkout.vim'
 
 " Plugins for web, javascript developement
 Plug 'pangloss/vim-javascript'
@@ -246,20 +269,31 @@ Plug 'leafgarland/typescript-vim'
 Plug 'peitalin/vim-jsx-typescript'
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 Plug 'jparise/vim-graphql'
+Plug 'ap/vim-css-color'
+
+Plug 'vimwiki/vimwiki'
+
+" autocompletion
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+"Add comments easily. Try gc in normal mode
+Plug 'tpope/vim-commentary'
+Plug 'pechorin/any-jump.vim'
+Plug 'ntpeters/vim-better-whitespace'
+Plug 'RRethy/vim-illuminate'
+
 call plug#end()
 
 let g:coc_global_extensions = [
-  \ 'coc-tsserver'
+  \ 'coc-tsserver',
+  \ 'coc-prettier',
+  \ 'coc-eslint',
+  \ 'coc-json',
+  \ 'coc-css',
+  \ 'coc-html'
   \ ]
 
-if isdirectory('./node_modules') && isdirectory('./node_modules/prettier')
-  let g:coc_global_extensions += ['coc-prettier']
-endif
-
-if isdirectory('./node_modules') && isdirectory('./node_modules/eslint')
-  let g:coc_global_extensions += ['coc-eslint']
-endif
+" airline plugin theme
+let g:airline_theme='papercolor'
 
 " indent guides
 let g:indent_guides_enable_on_vim_startup = 1
@@ -286,7 +320,7 @@ let g:airline_section_x='%{getcwd()}'
 "let g:airline_right_sep=''
 let g:airline_exclude_preview = 1
 " for vim-devicons
-"let g:airline_powerline_fonts = 1
+let g:airline_powerline_fonts = 1
 let g:airline_skip_empty_sections = 1
 " let g:airline#extensions#tabline#enabled = 1
 " let g:airline#extensions#tabline#tab_nr_type = 1
@@ -316,22 +350,57 @@ let g:airline_symbols.notexists = 'Ɇ'
 let g:airline_symbols.whitespace = 'Ξ'
 
 
-
 nnoremap <leader>u :UndotreeToggle<CR>
 
 
 let g:netrw_browse_split = 4
 let g:netrw_banner = 0
 let g:netrw_winsize = 20
+let g:netrw_liststyle = 3
+let g:netrw_altv = 1
 
-noremap <leader>pv :wincmd v<bar> :Ex <bar> :vertical resize 20<CR>
+" open explorer on left of window
+noremap <leader>e :Lex<CR>
+
+" Search using ctrlsf
+nmap <leader>fr :CtrlSF -R ""<Left>
+nmap <leader>fw <Plug>CtrlSFCwordPath -W<CR>
+nmap <leader>fc :CtrlSFFocus<CR>
+nmap <leader>fC :CtrlSFToggle<CR>
+
+let g:ctrlsf_winsize = '33%'
+let g:ctrlsf_auto_close = 0
+let g:ctrlsf_confirm_save = 0
+let g:ctrlsf_auto_focus = {
+    \ 'at': 'start',
+    \ }
+
+
+" requires fzf
+nmap // :BLines!<CR>
+" requires ripgrep
+nmap ?? :Rg<CR>
+nmap cc :Commands<CR>
 
 filetype plugin indent on    " required
 
 set background=dark
 if has('gui_running')
+" highlight the complete line that has the cursor
+    set cursorline
     colorscheme  monokai-phoenix
 else
-    colorscheme desert
+    colorscheme molokai
 endif
 set secure
+
+highlight GitGutterAdd    guifg=#009900 ctermfg=2
+highlight GitGutterChange guifg=#bbbb00 ctermfg=3
+highlight GitGutterDelete guifg=#ff2222 ctermfg=1
+
+" Yanked line highlight is persistent
+let g:highlightedyank_highlight_duration = -1
+
+" Show trailing spaces
+let g:better_whitespace_enabled=1
+nmap <leader>F :Prettier<CR>
