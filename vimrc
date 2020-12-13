@@ -33,6 +33,7 @@ set undofile
 " use system clipboard for cut/copy/pasting
 set clipboard=unnamed
 
+" use space and \ as leaders
 let mapleader=" "
 map \ <leader>
 
@@ -60,10 +61,11 @@ nnoremap <leader>j :wincmd j<CR>
 nnoremap <leader>k :wincmd k<CR>
 nnoremap <leader>l :wincmd l<CR>
 
-
+" Adjust vertical split window size
 nnoremap <leader>gw 20<C-W>>
 nnoremap <leader>gW 20<C-W><
 
+" Don't lose visual mode after changing indentation
 vmap < <gv
 vmap > >gv
 
@@ -248,6 +250,8 @@ Plug 'bling/vim-airline'
 
 " Airline theme
 Plug 'vim-airline/vim-airline-themes'
+
+" Make vim startup screen more useful
 Plug 'mhinz/vim-startify'
 
 " Color theme
@@ -259,6 +263,7 @@ Plug 'tomasr/molokai'
 
 Plug 'mbbill/undotree'
 
+" excellent search utility
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 "Plug 'stsewd/fzf-checkout.vim'
@@ -269,6 +274,7 @@ Plug 'leafgarland/typescript-vim'
 Plug 'peitalin/vim-jsx-typescript'
 Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
 Plug 'jparise/vim-graphql'
+" Display color from hex values
 Plug 'ap/vim-css-color'
 
 Plug 'vimwiki/vimwiki'
@@ -277,8 +283,11 @@ Plug 'vimwiki/vimwiki'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 "Add comments easily. Try gc in normal mode
 Plug 'tpope/vim-commentary'
+" jump to references. try <leader>j to look for word under cursor
 Plug 'pechorin/any-jump.vim'
+" highlight trailing spaces and provide easy function to fix them
 Plug 'ntpeters/vim-better-whitespace'
+" highlight word under cursor in current buffer
 Plug 'RRethy/vim-illuminate'
 
 call plug#end()
