@@ -1,5 +1,11 @@
 "Mohit's vimrc file.
-
+"
+"        _
+" __   _(_)_ __ ___  _ __ ___
+" \ \ / / | '_ ` _ \| '__/ __|
+"  \ V /| | | | | | | | | (__
+"   \_/ |_|_| |_| |_|_|  \___|
+"
 " Steps to setup
 " 1. Clone file from git and place it in ~/config/.
 " 2. On Mac/Linux create ~/.vimrc and so ~/config/vimrc from it.
@@ -41,11 +47,8 @@ autocmd!
 
 
 "make local directory same as file
-augroup BufEnter_dirs
-    autocmd!
-    autocmd BufEnter * if &modifiable |lcd %:p:h | endif
-    autocmd BufEnter * silent! lcd %:p:h
-augroup END
+" disable for dirvish
+"set autochdir
 
 " ===== Key mappings and shortcuts =====
 
@@ -55,6 +58,8 @@ nmap <C-j> <C-W>j
 nmap <C-k> <C-W>k
 nnoremap <C-l> <C-W>l
 nmap <C-h> <C-W>h
+
+nmap <leader>cd :lcd %:p:h<CR>
 
 nnoremap <leader>h :wincmd h<CR>
 nnoremap <leader>j :wincmd j<CR>
@@ -266,7 +271,6 @@ Plug 'mbbill/undotree'
 " excellent search utility
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-"Plug 'stsewd/fzf-checkout.vim'
 
 " Plugins for web, javascript developement
 Plug 'pangloss/vim-javascript'
@@ -289,8 +293,19 @@ Plug 'pechorin/any-jump.vim'
 Plug 'ntpeters/vim-better-whitespace'
 " highlight word under cursor in current buffer
 Plug 'RRethy/vim-illuminate'
+" help Fzf look for a .git directory
+"Plug 'airblade/vim-rooter'
+
+" Better and fast directory browser
+Plug 'justinmk/vim-dirvish'
 
 call plug#end()
+
+
+"let g:rooter_patterns = ['.git', 'Makefile']
+
+let g:dirvish_mode = ':sort ,^.*[\/],'
+
 
 let g:coc_global_extensions = [
   \ 'coc-tsserver',
@@ -317,7 +332,6 @@ augroup END
 
 " git fugitive shortcuts
 nmap <leader>gs :G<CR>
-nmap <leader>gc :Gcommit<CR>
 nmap <leader>gp :Gpush<CR>
 
 let g:airline_detect_modified = 1
@@ -412,4 +426,6 @@ let g:highlightedyank_highlight_duration = -1
 
 " Show trailing spaces
 let g:better_whitespace_enabled=1
-nmap <leader>F :Prettier<CR>
+nmap <leader>p :Prettier<CR>
+
+nmap <leader>f :FZF<CR>
