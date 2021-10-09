@@ -179,13 +179,13 @@ iab teh the
 "===== Coding related =====
 
 " keep tabstop, shiftwidth, softtabstop to the same value
-set tabstop=4
+set tabstop=2
 " spaces not tabs
 set expandtab
 " indentation width
-set shiftwidth=4
+set shiftwidth=2
 " allows backspace to remove tabs even if they are spaces
-set softtabstop=4
+set softtabstop=2
 
 set autoindent
 set smartindent
@@ -429,3 +429,15 @@ let g:better_whitespace_enabled=1
 nmap <leader>p :Prettier<CR>
 
 nmap <leader>f :FZF<CR>
+
+" use <tab> for trigger completion and navigate to the next complete item
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+" Use tab for coc auto-completion
+inoremap <silent><expr> <Tab>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<Tab>" :
+      \ coc#refresh()
